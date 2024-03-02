@@ -21,14 +21,17 @@ jobs:
         with:
           ref: "js"
 
+      - name: "Fetch all"
+        run: |
+          git fetch --all
+
       - name: "Remove everything except `package.json`"
         run: |
           rm -rf *
-          git checkout -- 'package.json'
+          git checkout 'origin/main' -- 'package.json'
 
       - name: "Create worktree from `main` branch."
         run: |
-          git fetch --all
           git worktree add 'worktree-main' 'main'
 
       - name: "Build worktree."
