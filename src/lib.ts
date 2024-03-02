@@ -15,6 +15,9 @@ export function cache<T>(
     try {
       cachedValue = getValue();
       return await cachedValue;
+    } catch (err) {
+      cachedValue = null;
+      throw err;
     } finally {
       updatedAt = Date.now();
       isUpdating = false;
