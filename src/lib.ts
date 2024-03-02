@@ -10,7 +10,7 @@ export function cache<T>(
   let cachedValue: Promise<T> | null = null;
   let updatedAt: number = 0;
 
-  async function updateCachedValue() {
+  async function updateCachedValue(): Promise<T> {
     isUpdating = true;
     try {
       cachedValue = getValue();
