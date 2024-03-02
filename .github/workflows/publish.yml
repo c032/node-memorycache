@@ -11,9 +11,6 @@ jobs:
     uses: "./.github/workflows/check.yml"
 
   publish:
-    # TODO: Remove to start publishing to the `js` branch.
-    if: false
-
     runs-on: "ubuntu-latest"
     needs:
       - "check"

@@ -1,15 +1,14 @@
-import { strict as assert } from "node:assert";
 import { describe, it } from "node:test";
 
-import { noop } from "./lib";
-
 describe("lib", () => {
-  describe("noop", () => {
-    it("returns `null`", () => {
-      const actual = noop();
-      const expected = null;
-
-      assert.equal(actual, expected);
+  describe("cache", () => {
+    describe("closure", () => {
+      it.todo(
+        "returns the cached value if the elapsed time is lower than the TTL",
+      );
+      it.todo(
+        "fetches a new value if the elapsed time is higher or equal than the TTL",
+      );
     });
   });
 });
