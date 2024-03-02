@@ -1,0 +1,15 @@
+{
+  "name": "template-typescript-lib",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "fmt": "fmt",
+    "lint": "lint",
+    "test": "rm -rf ./build/ && tsc && cd ./build/ && node --test ."
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "node-base-typescript": "github:c032/node-base-typescript"
+  }
+}

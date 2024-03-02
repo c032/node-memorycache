@@ -1,0 +1,81 @@
+name: "publish"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  check:
+    uses: "./.github/workflows/check.yml"
+
+  publish:
+    # TODO: Remove to start publishing to the `js` branch.
+    if: false
+
+    runs-on: "ubuntu-latest"
+    needs:
+      - "check"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+        with:
+          ref: "js"
+
+      - name: "Remove everything except `package.json`"
+        run: |
+          rm -rf *
+          git checkout -- 'package.json'
+
+      - name: "Create worktree from `main` branch."
+        run: |
+          git fetch --all
+          git worktree add 'worktree-main' 'main'
+
+      - name: "Build worktree."
+        run: |
+          cd 'worktree-main'
+          npm ci
+          npm run build
+
+      - name: "Move built files."
+        run: |
+          mv -v worktree-main/build/* '.'
+
+      - name: "Move `package.json`."
+        run: |
+          mv -v 'worktree-main/package.json' '.'
+
+      - name: "Move `LICENSE`."
+        run: |
+          mv -v 'worktree-main/LICENSE' '.' || true
+
+      - name: "Cleanup `package.json`."
+        run: |
+          set -x -e -u -o pipefail
+
+          node -p -e 'Object.keys(require("./package.json")).join("\n")' \
+          | grep -vE '^(name|version|private|license)$' \
+          | sed -r 's@^@npm pkg delete @g' \
+          | sh
+
+      - name: "Remove worktree."
+        run: |
+          git worktree remove -f 'worktree-main'
+
+      - name: "`git config`"
+        run: |
+          git config user.name 'GitHub Actions'
+          git config user.email '<>'
+
+      - name: "Commit and push"
+        run: |
+          git add --all -v
+
+          # Abort if there's no changed files.
+          git diff --cached --quiet && exit 0
+
+          git commit -m "Build: $(git rev-parse 'main')"
+          git push -u 'origin' 'js'
